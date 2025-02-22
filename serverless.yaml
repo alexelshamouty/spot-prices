@@ -61,6 +61,7 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: costspottyalex
+        DeletionPolicy: Retain
         LoggingConfiguration:
           DestinationBucketName: centrallogsbucketforalex2
           LogFilePrefix: spotty-logs
