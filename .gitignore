@@ -96,4 +96,3 @@ public/
 # TernJS port file
 .tern-port
 .requirements.zip
-package*.json
