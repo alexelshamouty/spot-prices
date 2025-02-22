@@ -23,4 +23,7 @@ This Python script retrieves and analyzes AWS EC2 spot instance prices, generate
 
 ## Usage
 
-Deploy this script as an AWS Lambda function. Ensure the Lambda function has the necessary permissions to access EC2 and S3 services.
+Deploy this script as an AWS Lambda function. 
+You need the serverless framework.
+
+From there just sls deploy and the framework will take care of the rest.
