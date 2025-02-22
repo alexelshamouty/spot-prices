@@ -118,6 +118,9 @@ resources:
     CloudFrontDistributionDomainName:
       Description: "The domain name of the CloudFront Distribution"
       Value: !Sub "https://${CloudFrontDistribution.DomainName}"
+    S3BucketName:
+      Description: "The name of the S3 bucket"
+      Value: !Ref S3Bucket
 
 functions:
   costSpotty:
