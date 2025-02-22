@@ -64,6 +64,14 @@ resources:
         OwnershipControls:
           Rules:
             - ObjectOwnership: BucketOwnerEnforced
+    S3BucketLoggingPolicy:
+      Type: AWS::S3::BucketLogging
+      Properties:
+        Bucket: !Ref S3Bucket
+        BucketLoggingStatus:
+          LoggingEnabled:
+            TargetBucket: 'arn:aws:s3:::centrallogsbucketforalex2'
+            TargetPrefix: logs
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
