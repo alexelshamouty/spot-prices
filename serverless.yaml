@@ -59,9 +59,9 @@ resources:
           SigningProtocol: sigv4
     S3Bucket:
       Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
       Properties:
         BucketName: costspottyalex
-        DeletionPolicy: Retain
         LoggingConfiguration:
           DestinationBucketName: centrallogsbucketforalex2
           LogFilePrefix: spotty-logs
