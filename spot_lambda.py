@@ -89,8 +89,8 @@ def calculate_instances_price(response):
     figCpus.write_html("/tmp/spot_prices_small.html")
 
 def upload_to_s3():
-    s3.upload_file("/tmp/spot_prices_all.html", "costspottyalex", "spot_prices_all.html")
-    s3.upload_file("/tmp/spot_prices_small.html", "costspottyalex", "spot_prices_small.html")
+    s3.upload_file("/tmp/spot_prices_all.html", "costspottyalex", "spot_prices_all.html", ExtraArgs={'ContentType': 'text/html'})
+    s3.upload_file("/tmp/spot_prices_small.html", "costspottyalex", "spot_prices_small.html", ExtraArgs={'ContentType': 'text/html'})
 
 # start a python lambda handler function
 def handler(event, context):
