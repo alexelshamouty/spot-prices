@@ -1,5 +1,7 @@
 # Spot Lambda
 
+![CI](https://github.com/alexelshamouty/spot-prices/actions/workflows/deploy.yaml/badge.svg)
+
 This Python script retrieves and analyzes AWS EC2 spot instance prices, generates visualizations, and uploads the results to an S3 bucket.
 
 ## Features
