@@ -1,0 +1,127 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: alexelshamouty
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: costspotty
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: costSpotty
+
+provider:
+  name: aws
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+          Resource:
+            - Fn::Sub: "arn:aws:s3:::${S3Bucket}/*"
+        - Effect: "Allow"
+          Action:
+            - "ec2:DescribeInstances"
+            - "ec2:DescribeInstanceTypes"
+            - "ec2:DescribeSpotPriceHistory"
+          Resource:
+            - "*"
+  ecr:
+    images:
+      baseimage:
+        path: ./
+        platform: linux/amd64
+        file: Dockerfile
+package:
+  exclude:
+    - .gitignore
+    - node_modules/**
+    - .serverless/**
+    - .vscode/**
+    - .git/**
+    - .serverless/**
+    - .vscode/**
+    - .venv/**
+    - .pytest_cache/**
+    - .pytest_cache/**
+    - .pytest_cache/**
+    - __pycache__/**
+    - ./pandas/**
+    - ./plotly/**
+    - requirements.txt
+
+resources:
+  Resources:
+    DistributionOAC:
+      Type: AWS::CloudFront::OriginAccessControl
+      Properties:
+        OriginAccessControlConfig:
+          Description: "CloudFront OAC for Cost Spotty"
+          Name: "costspottyalex"
+          OriginAccessControlOriginType: s3
+          SigningBehavior: always
+          SigningProtocol: sigv4
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: costspottyalex
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref S3Bucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - 's3:*'
+              Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+              Principal:
+                Service: 'lambda.amazonaws.com'
+              Condition:
+                StringEquals:
+                  #Allow only the lambda function to access the bucket
+                  AWS:SourceArn: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:costSpotty'
+            - Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+              Principal:
+                Service: cloudfront.amazonaws.com
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          DefaultCacheBehavior:
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            DefaultTTL: 86400
+            MinTTL: 0
+            MaxTTL: 31536000
+            ForwardedValues:
+              QueryString: false
+          Enabled: true
+          HttpVersion: http2
+          DefaultRootObject: index.html
+          Origins:
+            - Id: S3Origin
+              OriginAccessControlId: !Ref DistributionOAC
+              DomainName: !Sub "${S3Bucket}.s3.amazonaws.com"
+              S3OriginConfig: {}
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: true
+      # Outputs disribution url
+  Outputs:
+    CloudFrontDistributionDomainName:
+      Description: "The domain name of the CloudFront Distribution"
+      Value: !Sub "https://${CloudFrontDistribution.DomainName}"
+
+functions:
+  costSpotty:
+    timeout: 360
+    image: baseimage
+    url: true
+    platform: linux/amd64

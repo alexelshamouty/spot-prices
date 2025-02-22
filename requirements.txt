@@ -1,0 +1,5 @@
+plotly
+plotly.express
+numpy
+boto3
+pandas

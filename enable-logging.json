@@ -1,0 +1,7 @@
+{
+  "LoggingEnabled": {
+    "TargetBucket": "centrallogsbucketforalex2",
+    "TargetPrefix": "spotty-logs/"
+  }
+}
+
